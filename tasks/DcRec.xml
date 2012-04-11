@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Task>
+	<!-- List of components -->
+	<Components>
+		<Source type="CameraUniCap" thread="Thread1" group="s1">
+		</Source>
+
+		<Dc1 type ="CvThreshold" thread="Thread1" group="s1">
+		</Dc1>
+
+		<Split type="CvSplit" thread="Thread1" group="s1">
+			<channels>2</channels>
+		</Split>
+
+		<Window type="CvWindow" thread="WndExec" group="s1">
+			<title>Preview</title>
+			<count>2</count>
+		</Window>
+	</Components>
+
+	<!-- Threads of execution -->
+	<Executors>
+		<Thread1 type="continuous">
+			<main_component>Source</main_component>
+		</Thread1>
+
+		<WndExec type="periodic">
+			<main_component>Window</main_component>
+			<interval>0.03</interval>
+		</WndExec>
+	</Executors>
+
+	<!-- Event connections -->
+	<Events>
+		<Event source="Source.newImage" destination="Split.onNewImage"/>
+		<Event source="Split.newImage" destination="Window.onNewImage0"/>
+		<Event source="Split.newImage" destination="Dc1.onNewImage"/>
+		<Event source="Dc1.newImage" destination="Window.onNewImage1"/>
+	</Events>
+
+	<!-- Data stream assignments -->
+	<DataStreams>
+		<Source>
+			<out_img type="out" group="ConS"/>
+		</Source>
+
+		<Dc1>
+			<in_img type="in" group="ConD"/>
+			<out_img type="out" group="Con1"/>
+		</Dc1>
+
+		<Split>
+			<in_img type="in" group="ConS"/>
+			<out_img_0 type="out" group="ConD"/>
+			<out_img_1 type="out" group="Con0"/>
+		</Split>
+
+		<Window>
+			<in_img0 type="in" group="Con0"/>
+			<in_img1 type="in" group="Con1"/>
+		</Window>
+	</DataStreams>
+
+</Task>

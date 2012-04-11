@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Task>
+	<!-- List of components -->
+	<Components>
+		<Source type="CameraUniCap" thread="Thread1" group="s1">
+		</Source>
+
+		<Dc1 type ="CvThreshold" thread="Thread1" group="s1">
+		</Dc1>
+
+		<Dc2 type ="CvMorphology" thread="Thread1" group="s1">
+		</Dc2>
+
+		<Split1 type="CvSplit" thread="Thread1" group="s1">
+			<channels>2</channels>
+		</Split1>
+
+		<Split2 type="CvSplit" thread="Thread1" group="s1">
+			<channels>2</channels>
+		</Split2>
+
+		<Window type="CvWindow" thread="WndExec" group="s1">
+			<title>Preview</title>
+			<count>3</count>
+		</Window>
+	</Components>
+
+	<!-- Threads of execution -->
+	<Executors>
+		<Thread1 type="continuous">
+			<main_component>Source</main_component>
+		</Thread1>
+
+		<WndExec type="periodic">
+			<main_component>Window</main_component>
+			<interval>0.03</interval>
+		</WndExec>
+	</Executors>
+
+	<!-- Event connections -->
+	<Events>
+		<Event source="Source.newImage" destination="Split1.onNewImage"/>
+		<Event source="Split1.newImage" destination="Window.onNewImage0"/>
+		<Event source="Split1.newImage" destination="Dc1.onNewImage"/>
+
+		<Event source="Dc1.newImage" destination="Split2.onNewImage"/>
+		<Event source="Split2.newImage" destination="Window.onNewImage1"/>
+		<Event source="Split2.newImage" destination="Dc2.onNewImage"/>
+
+		<Event source="Dc2.newImage" destination="Window.onNewImage2"/>
+	</Events>
+
+	<!-- Data stream assignments -->
+	<DataStreams>
+		<Source>
+			<out_img type="out" group="S1"/>
+		</Source>
+
+		<Split1>
+			<in_img type="in" group="S1"/>
+			<out_img_0 type="out" group="D1"/>
+			<out_img_1 type="out" group="W0"/>
+		</Split1>
+
+		<Dc1>
+			<in_img type="in" group="D1"/>
+			<out_img type="out" group="S2"/>
+		</Dc1>
+
+		<Split2>
+			<in_img type="in" group="S2"/>
+			<out_img_0 type="out" group="D2"/>
+			<out_img_1 type="out" group="W1"/>
+		</Split2>
+
+		<Dc2>
+			<in_img type="in" group="D2"/>
+			<out_img type="out" group="W2"/>
+		</Dc2>
+
+		<Window>
+			<in_img0 type="in" group="S1"/>
+			<in_img1 type="in" group="S2"/>
+			<in_img2 type="in" group="W2"/>
+		</Window>
+	</DataStreams>
+
+</Task>

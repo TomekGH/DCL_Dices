@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Task>
+	<!-- List of components -->
+	<Components>
+		<Source type="CameraUniCap" thread="Thread1" group="s1">
+		</Source>
+		
+		<Color type="CvColorConv" thread="Thread1" group="s1">
+			<type>RGB2GRAY</type>
+		</Color>
+
+		<Threshold type ="CvThreshold" thread="Thread1" group="s1">
+			<type>BINARY</type>
+		</Threshold>
+
+		<Contours1 type ="CvFindContours" thread="Thread1" group="s1">
+			<min>201</min>
+			<max>8000</min>
+			<colorR>255</colorR>
+			<colorG>0</colorG>
+			<colorB>0</colorB>
+		</Contours1>
+
+		<Contours2 type ="CvFindContours" thread="Thread1" group="s1">
+			<min>10</min>
+			<max>50</min>
+			<colorR>0</colorR>
+			<colorG>255</colorG>
+			<colorB>0</colorB>
+		</Contours2>
+
+		<Recognition type ="DcRecognition" thread="Thread1" group="s1">
+		</Recognition>
+
+		<Presentation type="DcPresentation" thread="Thread1" group="s1">
+		</Presentation>
+
+		<Window type="CvWindow" thread="WndExec" group="s1">
+			<title>Preview</title>
+			<count>5</count>
+		</Window>
+	</Components>
+
+	<!-- Threads of execution -->
+	<Executors>
+		<Thread1 type="continuous">
+			<main_component>Source</main_component>
+		</Thread1>
+
+		<WndExec type="periodic">
+			<main_component>Window</main_component>
+			<interval>0.01</interval>
+		</WndExec>
+	</Executors>
+
+	<!-- Event connections -->
+	<Events>
+		<Event source="Source.newImage" destination="Color.onNewImage"/>
+
+		<Event source="Color.newImage" destination="Threshold.onNewImage"/>
+
+		<Event source="Threshold.newImage" destination="Contours1.onNewImage"/>
+
+		<Event source="Threshold.newImage" destination="Contours2.onNewImage"/>
+
+		<Event source="Contours2.newContours" destination="Recognition.onNewContours"/>
+
+		<Event source="Recognition.newDices" destination="Presentation.onNewDices"/>
+
+		<Event source="Source.newImage" destination="Window.onNewImage0"/>
+		<Event source="Threshold.newImage" destination="Window.onNewImage1"/>
+		<Event source="Contours1.newImage" destination="Window.onNewImage2"/>
+		<Event source="Contours2.newImage" destination="Window.onNewImage3"/>
+		<Event source="Presentation.newImage" destination="Window.onNewImage4"/>
+	</Events>
+
+	<!-- Data stream assignments -->
+	<DataStreams>
+		<Source>
+			<out_img type="out" group="S"/>
+		</Source>
+
+		<Color>
+			<in_img type="in" group="S"/>
+			<out_img type="out" group="C"/>
+		</Color>
+
+		<Threshold>
+			<in_img type="in" group="C"/>
+			<out_img type="out" group="T"/>
+		</Threshold>
+
+		<Contours1>
+			<in_img type="in" group="T"/>
+			<out_img type="out" group="W1"/>
+			<out_contours type="out" group="C1"/>
+		</Contours1>
+
+		<Contours2>
+			<in_img type="in" group="T"/>
+			<out_img type="out" group="W2"/>
+			<out_contours type="out" group="C2"/>
+		</Contours2>
+
+		<Recognition>
+			<in_contours_big type="in" group="C1"/>
+			<in_contours_small type="in" group="C2"/>
+			<out_dices type="out" group="D"/>
+		</Recognition>
+
+		<Presentation>
+			<in_dices type="in" group="D"/>
+			<in_img type="in" group="S"/>
+			<out_img type="out" group="WP"/>
+		</Presentation>
+
+		<Window>
+			<in_img0 type="in" group="S"/>
+			<in_img1 type="in" group="T"/>
+			<in_img2 type="in" group="W1"/>
+			<in_img3 type="in" group="W2"/>
+			<in_img4 type="in" group="WP"/>
+		</Window>
+	</DataStreams>
+
+</Task>

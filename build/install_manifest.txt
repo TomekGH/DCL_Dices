@@ -1,0 +1,7 @@
+/home/tpokorsk/Pulpit/DCL/DCL_Dices/dist/lib/libDcTest.so
+/home/tpokorsk/Pulpit/DCL/DCL_Dices/dist/lib/libDcImageProcessing.so
+/home/tpokorsk/Pulpit/DCL/DCL_Dices/dist/lib/libDcFeatureExtraction.so
+/home/tpokorsk/Pulpit/DCL/DCL_Dices/dist/lib/libDcObjectRecognition.so
+/home/tpokorsk/Pulpit/DCL/DCL_Dices/dist/lib/libCvFindContours.so
+/home/tpokorsk/Pulpit/DCL/DCL_Dices/dist/lib/libDcRecognition.so
+/home/tpokorsk/Pulpit/DCL/DCL_Dices/dist/lib/libDcPresentation.so

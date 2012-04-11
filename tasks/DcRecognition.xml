@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Task>
+	<!-- List of components -->
+	<Components>
+
+	<Source type="CameraUniCap" thread="Exec1" group="s1">	
+	</Source>
+
+	<Dc1 type="CvThreshold" thread="Exec1" group="s1">
+        </Dc1>
+
+	<Dc2 type="CvThreshold" thread="Exec1" group="s1">
+        </Dc2>
+
+	<Dc3 type="CvThreshold" thread="Exec1" group="s1">
+        </Dc3>
+
+	<Split1 type="CvSplit" thread="Exec1" group="s1">
+		<channels>2</channels>
+	</Split1>
+
+	<Split2 type="CvSplit" thread="Exec1" group="s1">
+		<channels>2</channels>
+	</Split2>
+
+	<Split3 type="CvSplit" thread="Exec1" group="s1">
+		<channels>2</channels>
+	</Split3>
+
+	<Window type="CvWindow" thread="WndExec" group="s1">
+		<title>DcPreview</title>
+		<count>4</count>
+	</Window>
+
+	</Components>
+
+	<!-- Threads of execution -->
+	<Executors>
+		<Exec1 type="continuous">
+			<main_component>Source</main_component>
+		</Exec1>
+
+		<WndExec type="periodic">
+			<main_component>Window</main_component>
+			<interval>0.03</interval>
+		</WndExec>
+	</Executors>
+
+	<!-- Event connections -->
+	<Events>
+		<Event source="Source.newImage" destination="Split1.onNewImage"/>
+		<Event source="Split1.newImage" destination="Window.onNewImage0"/>
+		<Event source="Split1.newImage" destination="Dc1.onNewImage"/>
+		
+		<Event source="Dc1.newImage" destination="Split2.onNewImage"/>
+		<Event source="Split2.newImage" destination="Window.onNewImage1"/>
+		<Event source="Split2.newImage" destination="Dc2.onNewImage"/>
+
+
+		<Event source="Dc2.newImage" destination="Split3.onNewImage"/>
+		<Event source="Split3.newImage" destination="Window.onNewImage2"/>
+		<Event source="Split3.newImage" destination="Dc3.onNewImage"/>
+
+
+		<Event source="Dc3.newImage" destination="Window.onNewImage3"/>
+	</Events>
+
+	<!-- Data stream assignments -->
+	<DataStreams>
+
+		<Source>
+			<out_img type="out" group="Sp1"/>
+		</Source>
+
+		<Split1>
+			<in_img type="in" group="Sp1"/>
+			<out_img_0 type="out" group="Dc1"/>
+			<out_img_1 type="out" group="W1"/>
+		</Split1>
+
+		<Dc1>
+			<in_img type="in" group="Dc1"/>
+			<out_img type="out" group="Sp2"/>
+		</Dc1>
+
+		<Split2>
+			<in_img type="in" group="Sp2"/>
+			<out_img_0 type="out" group="Dc2"/>
+			<out_img_1 type="out" group="W2"/>
+		</Split2>
+
+		<Dc2>
+			<in_img type="in" group="Dc2"/>
+			<out_img type="out" group="Sp3"/>
+		</Dc2>
+
+		<Split3>
+			<in_img type="in" group="Sp3"/>
+			<out_img_0 type="out" group="Dc3"/>
+			<out_img_1 type="out" group="W3"/>
+		</Split3>
+
+		<Dc3>
+			<in_img type="in" group="Dc3"/>
+			<out_img type="out" group="W4"/>
+		</Dc3>
+
+
+		<Window>
+			<in_img0 type="in" group="W1"/>
+			<in_img1 type="in" group="W2"/>
+			<in_img2 type="in" group="W3"/>
+			<in_img3 type="in" group="W4"/>
+		</Window>
+
+	</DataStreams>
+
+</Task>

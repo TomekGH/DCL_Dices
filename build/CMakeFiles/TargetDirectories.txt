@@ -1,0 +1,7 @@
+/home/tpokorsk/Pulpit/DCL/DCL_Dices/build/src/Components/CvFindContours/CMakeFiles/CvFindContours.dir
+/home/tpokorsk/Pulpit/DCL/DCL_Dices/build/src/Components/DcFeatureExtraction/CMakeFiles/DcFeatureExtraction.dir
+/home/tpokorsk/Pulpit/DCL/DCL_Dices/build/src/Components/DcImageProcessing/CMakeFiles/DcImageProcessing.dir
+/home/tpokorsk/Pulpit/DCL/DCL_Dices/build/src/Components/DcObjectRecognition/CMakeFiles/DcObjectRecognition.dir
+/home/tpokorsk/Pulpit/DCL/DCL_Dices/build/src/Components/DcPresentation/CMakeFiles/DcPresentation.dir
+/home/tpokorsk/Pulpit/DCL/DCL_Dices/build/src/Components/DcRecognition/CMakeFiles/DcRecognition.dir
+/home/tpokorsk/Pulpit/DCL/DCL_Dices/build/src/Components/DcTest/CMakeFiles/DcTest.dir
