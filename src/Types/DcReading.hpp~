@@ -1,0 +1,54 @@
+/*
+ * DcReading.hpp
+ *
+ *      Author: tomasz
+ */
+
+#ifndef DCREADING_HPP_
+#define DCREADING_HPP_
+
+#include "Types/Mrrocpp_Proxy/Reading.hpp"
+#include "Types/DicesMatrix.hpp"
+
+namespace Types {
+//namespace Mrrocpp_Proxy {
+
+/**
+ *
+ */
+class DcReading : public Mrrocpp_Proxy::Reading
+{
+public:
+
+	virtual ~DcReading()
+	{
+	}
+
+	virtual DcReading* clone()
+	{
+		return new DcReading(*this);
+	}
+
+
+	Types::DicesMatrix matrix;
+
+	virtual void send(boost::shared_ptr<xdr_oarchive<> > & ar){
+		*ar<<*this;
+	}
+
+private:
+	friend class boost::serialization::access;
+	template <class Archive>
+	void serialize(Archive & ar, const unsigned int version)
+	{
+//		LOG(LWARNING) << "DcReading::serialize()\n";
+		ar & boost::serialization::base_object <Reading>(*this);
+
+		ar & matrix;
+	}
+};
+
+//}//namespace Mrrocpp_Proxy
+}//namespace Types
+
+#endif /* DcReading_HPP_ */

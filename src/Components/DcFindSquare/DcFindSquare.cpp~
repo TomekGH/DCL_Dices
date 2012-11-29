@@ -1,0 +1,152 @@
+/*!
+ * \file
+ * \brief
+ */
+
+#include <memory>
+#include <string>
+#include <vector> 
+
+#include "DcFindSquare.hpp"
+#include "Common/Logger.hpp"
+
+namespace Processors {
+namespace DcFindSquare {
+
+DcFindSquare::DcFindSquare(const std::string & name) : Base::Component(name)
+{
+	LOG(LTRACE) << "Hello DcFindSquare\n";
+}
+
+DcFindSquare::~DcFindSquare()
+{
+	LOG(LTRACE) << "Good bye DcFindSquare\n";
+}
+
+bool DcFindSquare::onInit()
+{
+	LOG(LTRACE) << "DcFindSquare::initialize\n";
+
+	    // Register handler.
+	    h_onNewImage.setup(this, &DcFindSquare::onNewImage);
+	    registerHandler("onNewImage", &h_onNewImage);
+	    // Register event.
+	    newContours = registerEvent("newContours");
+	    newImage = registerEvent("newImage");
+	    // Register data streams.
+	    registerStream("in_img", &in_img);
+	    registerStream("out_contours", &out_contours);
+	    registerStream("out_img", &out_img);
+
+	return true;
+}
+
+bool DcFindSquare::onFinish()
+{
+	LOG(LTRACE) << "DcFindSquare::finish\n";
+
+	return true;
+}
+
+bool DcFindSquare::onStep()
+{
+	LOG(LTRACE) << "DcFindSquare::step\n";
+	return true;
+}
+
+bool DcFindSquare::onStop()
+{
+	return true;
+}
+
+bool DcFindSquare::onStart()
+{
+	return true;
+}
+
+void DcFindSquare::onNewImage()
+{
+    LOG(LTRACE) << "DcFindSquare::onNewImage\n";
+	
+	int err = 0;    
+	try {
+        	
+
+	// Read image from input data stream.
+        Mat img = in_img.read();
+	Mat cpy = img.clone();
+	Mat drawing = Mat::zeros(img.size(), CV_8UC3);
+
+	err++;
+
+	// ContoursDetection {
+	vector<vector<Point> > contours;
+	vector<vector<Point> > out;
+	vector<Vec4i> hierarchy;
+	vector<Point> approx;
+	vector<Point> square;
+	err++;
+
+	// Find Contours
+	cv::findContours(cpy, contours, hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+	err++;
+	
+	// Draw square
+	
+	for(int i=0; i<=50; i++)
+	{	
+		square.push_back(Point(0,i));
+	}
+	for(int i=1; i<=50; i++)
+	{	
+		square.push_back(Point(i,50));
+	}
+	for(int i=49; i>=0; i--)
+	{	
+		square.push_back(Point(50,i));
+	}
+	for(int i=49; i>=1; i--)
+	{	
+		square.push_back(Point(i,0));
+	}	
+		
+	
+	double match;
+
+	// Select contours
+  	for(int i = 0; i< contours.size(); i++)
+     	{
+		approxPolyDP(Mat(contours[i]), approx, arcLength(Mat(contours[i]), true)*0.08, true);
+		match = matchShapes(Mat(approx), Mat(square), CV_CONTOURS_MATCH_I1, 0);
+ 		if (fabs(contourArea(Mat(approx))) > props.min && fabs(contourArea(Mat(approx))) < props.max && match<0.08)
+            	{
+			drawContours(drawing, contours, i, cv::Scalar(255.0,0.0,0.0), 0, 8, hierarchy, 0, Point());			
+			out.push_back(contours[i]);
+		}
+		else 
+		{
+			drawContours(drawing, contours, i, cv::Scalar(128.0,128.0,128.0), 0, 8, hierarchy, 0, Point());			
+		}
+	}
+	err++;
+	
+		
+
+        // Write image to output data stream.
+        out_contours.write(out);
+	out_img.write(drawing);       
+	err++;
+
+	// Raise event.
+        newContours->raise();
+	newImage->raise();
+	err++;
+
+    } catch (...) {
+        LOG(LERROR) << "DcFindSquare::onNewImage failed \n" << endl << err << endl;
+    }
+
+}
+
+}//: namespace DcFindSquare
+}//: namespace Processors

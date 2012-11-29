@@ -1,0 +1,101 @@
+/*!
+ * \file
+ * \brief
+ */
+
+#ifndef DCDECISION_HPP_
+#define DCDECISION_HPP_
+
+#include "Component_Aux.hpp"
+#include "Component.hpp"
+#include "Panel_Empty.hpp"
+#include "DataStream.hpp"
+
+#include "Types/HomogMatrix.hpp"
+
+#include <cv.h>
+#include <math.h>
+
+namespace Processors {
+namespace DcDecision {
+
+/*!
+ * \class DcDecision
+ * \brief DcDecision processor class.
+ */
+
+using namespace cv;
+
+class DcDecision: public Base::Component
+{
+public:
+	/*!
+	 * Constructor.
+	 */
+	DcDecision(const std::string & name = "");
+
+	/*!
+	 * Destructor
+	 */
+	virtual ~DcDecision();
+
+
+protected:
+
+	// Input data stream
+	Base::DataStreamIn <vector<vector<Point> > > in_contours;
+	Base::DataStreamIn <Mat> in_img;
+
+	// Output data stream
+	Base::DataStreamOut <Types::HomogMatrix> out_homogMatrix;
+	Base::DataStreamOut <double> out_angle;
+	Base::DataStreamOut <Mat> out_img;
+
+	// Event handler function.	
+	void onNewContours();
+
+	// Event handler.
+	Base::EventHandler <DcDecision> h_onNewContours;
+
+	// Event emited after the image is processed.
+	Base::Event * newHomogMatrix;
+	Base::Event * newAngle;
+	Base::Event * newImage;
+
+	/*!
+	 * Connects source to given device.
+	 */
+	bool onInit();
+
+	/*!
+	 * Disconnect source from device, closes streams, etc.
+	 */
+	bool onFinish();
+
+	/*!
+	 * Retrieves data from device.
+	 */
+	bool onStep();
+
+	/*!
+	 * Start component
+	 */
+	bool onStart();
+
+	/*!
+	 * Stop component
+	 */
+	bool onStop();
+
+};
+
+}//: namespace DcDecision
+}//: namespace Processors
+
+
+/*
+ * Register processor component.
+ */
+REGISTER_PROCESSOR_COMPONENT("DcDecision", Processors::DcDecision::DcDecision, Common::Panel_Empty)
+
+#endif /* DCDECISION_HPP_ */

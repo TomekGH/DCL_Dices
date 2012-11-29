@@ -7,10 +7,6 @@ ADD_COMPONENT(DcPresentation)
 
 ADD_COMPONENT(DcAlgorythm)
 
-ADD_COMPONENT(DcFindSquare)
+ADD_COMPONENT(MrrocppOrder)
 
-ADD_COMPONENT(DcDecision)
-
-ADD_COMPONENT(DcCountDots)
-
-ADD_COMPONENT(DcDiceReading)
+ADD_COMPONENT(MrrocppDices)

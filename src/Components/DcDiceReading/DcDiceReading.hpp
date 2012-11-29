@@ -1,0 +1,85 @@
+/*!
+ * \file
+ * \brief
+ */
+
+#ifndef DCDICEREADING_HPP_
+#define DCDICEREADING_HPP_
+
+#include "Component_Aux.hpp"
+#include "Component.hpp"
+#include "Panel_Empty.hpp"
+#include "DataStream.hpp"
+
+#include "Types/Mrrocpp_Proxy/DiceReading.hpp"
+
+namespace Processors {
+namespace DcDiceReading {
+
+/*!
+ * \class DcDiceReading
+ * \brief DcDiceReading processor class.
+ */
+class DcDiceReading: public Base::Component
+{
+public:
+	/*!
+	 * Constructor.
+	 */
+	DcDiceReading(const std::string & name = "");
+
+	/*!
+	 * Destructor
+	 */
+	virtual ~DcDiceReading();
+
+
+protected:
+
+	Base::DataStreamIn <double> in_angle;
+	Base::DataStreamIn <int> in_dots;
+
+	Base::DataStreamOut<Types::Mrrocpp_Proxy::DiceReading> out_reading;
+
+	void onNewAngle();
+
+	Base::EventHandler <DcDiceReading> h_onNewAngle;
+	Base::Event* readingReady;
+
+	/*!
+	 * Connects source to given device.
+	 */
+	bool onInit();
+
+	/*!
+	 * Disconnect source from device, closes streams, etc.
+	 */
+	bool onFinish();
+
+	/*!
+	 * Retrieves data from device.
+	 */
+	bool onStep();
+
+	/*!
+	 * Start component
+	 */
+	bool onStart();
+
+	/*!
+	 * Stop component
+	 */
+	bool onStop();
+
+};
+
+}//: namespace DcDiceReading
+}//: namespace Processors
+
+
+/*
+ * Register processor component.
+ */
+REGISTER_PROCESSOR_COMPONENT("DcDiceReading", Processors::DcDiceReading::DcDiceReading, Common::Panel_Empty)
+
+#endif /* DCDICEREADING_HPP_ */

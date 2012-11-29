@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Task>
+	<!-- List of components -->
+	<Components>
+		<Source type="CameraUniCap" thread="Thread1" group="s1">
+		</Source>
+
+		<Undistort type="CvUndistort" thread="Thread1" group="s1">
+			<cameraMatrix>
+			[3,3](
+			(600, 0., 312),
+			(0., 600, 160),
+			(0, 0, 1)
+			)
+			</cameraMatrix>
+			<distCoeffs>
+			[1,5](
+			(-0.51084775, 0.23313555, 4.50637517e-03, -6.86281081e-03, 4.94365674e-03)
+			)
+			</distCoeffs>
+		</Undistort>
+		
+		<Color type="CvColorConv" thread="Thread1" group="s1">
+			<type>RGB2GRAY</type>
+		</Color>
+
+		<Threshold type="CvThreshold" thread="Thread1" group="s1">
+			<type>BINARY</type>
+			<thresh>100</thresh>
+			<maxval>255</maxval>
+		</Threshold>
+
+
+		<FindSquare type="DcFindSquare" thread="Thread1" group="s1">
+			<min>55</min>
+			<max>1400</min>
+		</FindSquare>
+
+		<CountDots type="DcCountDots" thread="Thread1" group="s1">
+		</CountDots>
+		
+		<Decision type ="DcDecision" thread="Thread1" group="s1">
+		</Decision>
+
+		<VisualServoPB type="VisualServoPB" thread="Thread1" group="s1">
+		</VisualServoPB>
+
+		<MrrocppServo type="Mrrocpp" thread="MrrocServoThread" group="s1">
+			<port>8888</port>
+		</MrrocppServo>
+
+		<DiceReading type ="DcDiceReading" thread="Thread1" group="s1">
+		</DiceReading>
+
+		<MrrocppMP type="Mrrocpp" thread="MrrocMPThread" group="s1">
+			<port>5000</port>
+		</MrrocppMP>
+
+		<Window type="CvWindow" thread="WndExec" group="s1">
+			<title>Preview</title>
+			<count>7</count>
+		</Window>
+	</Components>
+
+	<!-- Threads of execution -->
+	<Executors>
+		<Thread1 type="continuous">
+			<main_component>Source</main_component>
+		</Thread1>
+
+		<MrrocServoThread type="continuous">
+			<main_component>MrrocppServo</main_component>
+		</MrrocServoThread>
+
+		<MrrocMPThread type="continuous">
+			<main_component>MrrocppMP</main_component>
+		</MrrocMPThread>
+
+		<WndExec type="periodic">
+			<main_component>Window</main_component>
+			<interval>0.01</interval>
+		</WndExec>
+	</Executors>
+
+	<!-- Event connections -->
+	<Events>
+		<Event source="Source.newImage" destination="Undistort.onNewImage"/>
+
+		<Event source="Undistort.newUndistortedImage" destination="Color.onNewImage"/>
+
+		<Event source="Color.newImage" destination="Threshold.onNewImage"/>
+
+		<Event source="Threshold.newImage" destination="FindSquare.onNewImage"/>
+
+		<Event source="Threshold.newImage" destination="CountDots.onNewImage"/>
+
+		<Event source="FindSquare.newContours" destination="Decision.onNewContours"/>
+
+		<Event source="Decision.newAngle" destination="DiceReading.onNewAngle"/>
+
+		<Event source="Decision.newHomogMatrix" destination="VisualServoPB.onObjectLocated"/>
+
+		<Event source="Source.newImage" destination="Window.onNewImage0"/>
+		<Event source="Undistort.newImage" destination="Window.onNewImage1"/>
+		<Event source="Color.newImage" destination="Window.onNewImage2"/>
+		<Event source="Threshold.newImage" destination="Window.onNewImage3"/>
+		<Event source="FindSquare.newImage" destination="Window.onNewImage4"/>
+		<Event source="CountDots.newImage" destination="Window.onNewImage5"/>
+		<Event source="Decision.newImage" destination="Window.onNewImage6"/>
+	</Events>
+
+	<!-- Data stream assignments -->
+	<DataStreams>
+		<Source>
+			<out_img type="out" group="Source"/>
+		</Source>
+
+		<Undistort>
+			<in_img type="in" group="Source"/>
+			<out_img type="out" group="Undistorted"/>
+		</Undistort>
+
+		<Color>
+			<in_img type="in" group="Undistorted"/>
+			<out_img type="out" group="Colorles"/>
+		</Color>
+
+		<Threshold>
+			<in_img type="in" group="Colorles"/>
+			<out_img type="out" group="Thresholded"/>
+		</Threshold>
+
+		<FindSquare>
+			<in_img type="in" group="Thresholded"/>
+			<out_img type="out" group="SquareImage"/>
+			<out_contours type="out" group="SquareContours"/>
+		</FindSquare>
+
+		<CountDots>
+			<in_img type="in" group="Thresholded"/>
+			<out_img type="out" group="DotsImage"/>
+			<out_dots type="out" group="Dots"/>
+		</CountDots>
+
+		<Decision>
+			<in_contours type="in" group="SquareContours"/>
+			<in_img type="in" group="Thresholded"/>
+			<out_img type="out" group="Map"/>
+			<out_homogMatrix type="out" group="Position"/>
+			<out_angle type="out" group="Angle"/>
+		</Decision>
+
+		<VisualServoPB>
+			<in_position type="in" group="Position"/>
+			<out_reading type="out" group="ServoReading"/>
+		</VisualServoPB>
+
+		<MrrocppServo>
+			<reading type="in" group="ServoReading"/>
+		</MrrocppServo>
+
+		<DiceReading>
+			<in_dots type="in" group="Dots"/>
+			<in_angle type="in" group="Angle"/>
+			<out_reading type="out" group="DCReading"/>
+		</DiceReading>
+
+		<MrrocppMP>
+			<reading type="in" group="DCReading"/>
+		</MrrocppMP>
+
+		<Window>
+			<in_img0 type="in" group="Source"/>
+			<in_img1 type="in" group="Undistorted"/>
+			<in_img2 type="in" group="Colorles"/>
+			<in_img3 type="in" group="Thresholded"/>
+			<in_img4 type="in" group="SquareImage"/>
+			<in_img5 type="in" group="DotsImage"/>
+			<in_img6 type="in" group="Map"/>
+		</Window>
+	</DataStreams>
+
+</Task>

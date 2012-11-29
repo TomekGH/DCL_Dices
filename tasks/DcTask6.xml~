@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Task>
+	<!-- List of components -->
+	<Components>
+		<Source type="CameraUniCap" thread="Thread1" group="s1">
+		</Source>
+
+		<Undistort type="CvUndistort" thread="Thread1" group="s1">
+			<cameraMatrix>
+			[3,3](
+			(600, 0., 312),
+			(0., 600, 160),
+			(0, 0, 1)
+			)
+			</cameraMatrix>
+			<distCoeffs>
+			[1,5](
+			(-0.51084775, 0.23313555, 4.50637517e-03, -6.86281081e-03, 4.94365674e-03)
+			)
+			</distCoeffs>
+		</Undistort>
+		
+		<Color type="CvColorConv" thread="Thread1" group="s1">
+			<type>RGB2GRAY</type>
+		</Color>
+
+		<Threshold type ="CvThreshold" thread="Thread1" group="s1">
+			<type>BINARY</type>
+			<thresh>100</thresh>
+			<maxval>255</maxval>
+		</Threshold>
+
+		<Morphology1 type="CvMorphology" thread="Thread1" group="s1">
+			<type>MORPH_CLOSE</type>
+			<iterations>0</iterations>
+		</Morphology1>
+
+		<Morphology2 type="CvMorphology" thread="Thread1" group="s1">
+			<type>MORPH_OPEN</type>
+			<iterations>0</iterations>
+		</Morphology2>
+
+		<Contours1 type ="CvFindContours" thread="Thread1" group="s1">
+			<min>55</min>
+			<max>2000</min>
+			<colorR>255</colorR>
+			<colorG>0</colorG>
+			<colorB>0</colorB>
+		</Contours1>
+
+		<Contours2 type ="CvFindContours" thread="Thread1" group="s1">
+			<min>2</min>
+			<max>8</min>
+			<colorR>0</colorR>
+			<colorG>255</colorG>
+			<colorB>0</colorB>
+		</Contours2>
+
+		<Recognition type ="DcRecognition" thread="Thread1" group="s1">
+		</Recognition>
+
+		<Algorythm type="DcAlgorythm" thread="Thread1" group="s1">
+		</Algorythm>
+
+		<Presentation type="DcPresentation" thread="Thread1" group="s1">
+		</Presentation>
+
+		<VisualServoPB type="VisualServoPB" thread="Thread1" group="s1">
+		</VisualServoPB>
+
+		<Mrrocpp type="Mrrocpp" thread="MrrocProxyThread" group="s1">
+			<port>8888</port>
+		</Mrrocpp>
+
+		<Window type="CvWindow" thread="WndExec" group="s1">
+			<title>Preview</title>
+			<count>8</count>
+		</Window>
+	</Components>
+
+	<!-- Threads of execution -->
+	<Executors>
+		<Thread1 type="continuous">
+			<main_component>Source</main_component>
+		</Thread1>
+
+		<MrrocProxyThread type="continuous">
+			<main_component>Mrrocpp</main_component>
+		</MrrocProxyThread>
+
+		<WndExec type="periodic">
+			<main_component>Window</main_component>
+			<interval>0.01</interval>
+		</WndExec>
+	</Executors>
+
+	<!-- Event connections -->
+	<Events>
+		<Event source="Source.newImage" destination="Undistort.onNewImage"/>
+
+		<Event source="Undistort.newUndistortedImage" destination="Color.onNewImage"/>
+
+		<Event source="Color.newImage" destination="Threshold.onNewImage"/>
+
+		<Event source="Threshold.newImage" destination="Morphology1.onNewImage"/>
+
+		<Event source="Morphology1.newImage" destination="Morphology2.onNewImage"/>
+
+		<Event source="Morphology2.newImage" destination="Contours1.onNewImage"/>
+
+		<Event source="Threshold.newImage" destination="Contours2.onNewImage"/>
+
+		<Event source="Contours2.newContours" destination="Recognition.onNewContours"/>
+
+		<Event source="Recognition.newDices" destination="Algorythm.onNewDices"/>
+		<Event source="Recognition.newDices" destination="Presentation.onNewDices"/>
+
+		<Event source="Algorythm.newHomogMatrix" destination="VisualServoPB.onObjectLocated"/>
+
+		<Event source="Source.newImage" destination="Window.onNewImage0"/>
+		<Event source="Color.newImage" destination="Window.onNewImage1"/>
+		<Event source="Threshold.newImage" destination="Window.onNewImage2"/>
+		<Event source="Morphology1.newImage" destination="Window.onNewImage3"/>
+		<Event source="Morphology2.newImage" destination="Window.onNewImage4"/>
+		<Event source="Contours1.newImage" destination="Window.onNewImage5"/>
+		<!--Event source="Contours2.newImage" destination="Window.onNewImage6"/-->
+		<Event source="Presentation.newImage" destination="Window.onNewImage7"/>
+	</Events>
+
+	<!-- Data stream assignments -->
+	<DataStreams>
+		<Source>
+			<out_img type="out" group="Source"/>
+		</Source>
+
+		<Undistort>
+			<in_img type="in" group="Source"/>
+			<out_img type="out" group="Undistorted"/>
+		</Undistort>
+
+		<Color>
+			<in_img type="in" group="Undistorted"/>
+			<out_img type="out" group="Colorles"/>
+		</Color>
+
+		<Threshold>
+			<in_img type="in" group="Colorles"/>
+			<out_img type="out" group="Thresholded"/>
+		</Threshold>
+
+		<Morphology1>
+			<in_img type="in" group="Thresholded"/>
+			<out_img type="out" group="Morphology1"/>
+		</Morphology1>
+
+		<Morphology2>
+			<in_img type="in" group="Morphology1"/>
+			<out_img type="out" group="Morphology2"/>
+		</Morphology2>
+
+		<Contours1>
+			<in_img type="in" group="Morphology2"/>
+			<out_img type="out" group="ContoursPreview1"/>
+			<out_contours type="out" group="Contours1"/>
+		</Contours1>
+
+		<Contours2>
+			<in_img type="in" group="Thresholded"/>
+			<out_img type="out" group="ContoursPreview2"/>
+			<out_contours type="out" group="Contours2"/>
+		</Contours2>
+
+		<Recognition>
+			<in_contours_big type="in" group="Contours1"/>
+			<in_contours_small type="in" group="Contours2"/>
+			<out_dices type="out" group="Dices"/>
+		</Recognition>
+
+		<Algorythm>
+			<in_dices type="in" group="Dices"/>
+			<out_homogMatrix type="out" group="Position"/>
+		</Algorythm>
+
+		<VisualServoPB>
+			<in_position type="in" group="Position"/>
+			<out_reading type="out" group="Reading"/>
+		</VisualServoPB>
+
+		<Mrrocpp>
+			<reading type="in" group="Reading"/>
+		</Mrrocpp>
+
+		<Presentation>
+			<in_dices type="in" group="Dices"/>
+			<in_img type="in" group="Undistorted"/>
+			<out_img type="out" group="Presentation"/>
+		</Presentation>
+
+		<Window>
+			<in_img0 type="in" group="Source"/>
+			<in_img1 type="in" group="Colorles"/>
+			<in_img2 type="in" group="Thresholded"/>
+			<in_img3 type="in" group="Morphology1"/>
+			<in_img4 type="in" group="Morphology2"/>
+			<in_img5 type="in" group="ContoursPreview1"/>
+			<in_img6 type="in" group="ContoursPreview2"/>
+			<in_img7 type="in" group="Presentation"/>
+		</Window>
+	</DataStreams>
+
+</Task>

@@ -28,4 +28,4 @@ SET(CMAKE_INCLUDE_CURRENT_DIR ON)
      COMPONENT sdk
  )
 
-add_subdirectory(Mrrocpp_Proxy)
+#add_subdirectory(Mrrocpp_Proxy)
